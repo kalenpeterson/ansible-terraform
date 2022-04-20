@@ -1,0 +1,33 @@
+---
+## Manage a TF Deployment from AWX
+##  - Assumes that TF is installed on the host this runs on
+##  - Assumes that BG is postgres
+##  - deployment_id will corrospond to a workspace/state stored in PG, MUST be unique
+##  - state: present = terraform apply -auto-approve
+##    state: absent  = terraform destroy -auto-approve
+##  - tf_vars can be any arbitrary variables to pass to terraform
+- name: Manage Terraform Deployment
+  hosts: local
+  connecton: local
+  gather_facts: false
+  vars:
+    deployment_id: TASK00001
+    state: present
+    tf_project_path: ../tf-projects/deploy-docker-container
+    tf_vars:
+      container_name: nginx-001
+      container_image: 'nginx:latest'
+
+  tasks:
+  - name: Run Terraform
+    community.general.terraform:
+      binary_path: /usr/local/bin/terraform
+      backend_config:
+        conn_str: "{{ lookup('env', 'PG_CONNECT_STRING') }}"
+      force_init: no
+      lock: true
+      project_path: "{{ tf_project_path }}"
+      state: "{{ state }}"
+      workspace: "{{ deployment_id }}"
+      purge_workspace: true
+      variables: "{{ tf_vars }}"
