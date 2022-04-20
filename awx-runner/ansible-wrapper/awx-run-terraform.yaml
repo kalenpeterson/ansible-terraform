@@ -1,6 +1,6 @@
 ---
 ## Manage a TF Deployment from AWX
-##  - Assumes that TF is installed on the host this runs on
+##  - Assumes that TF is installed in the execution environment this runs on
 ##  - Assumes that BG is postgres
 ##  - deployment_id will corrospond to a workspace/state stored in PG, MUST be unique
 ##  - state: present = terraform apply -auto-approve
